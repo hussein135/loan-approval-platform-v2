@@ -1,0 +1,54 @@
+{% extends "loans/base.html" %}
+{% block title %}All Applications{% endblock %}
+{% block content %}
+
+<h1>All Loan Applications</h1>
+
+{% if applications %}
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Credit Score</th>
+            <th>Annual Income</th>
+            <th>Loan Amount</th>
+            <th>AI Recommendation</th>
+            <th>System Status</th>
+            <th>Human Decision</th>
+            <th>Created</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for application in applications %}
+        <tr>
+            <td>#{{ application.id }}</td>
+            <td>{{ application.credit_score }}</td>
+            <td>{{ application.annual_income }}</td>
+            <td>{{ application.loan_amount_requested }}</td>
+            <td>{{ application.model_recommendation }}</td>
+            <td>
+                {% if application.system_status == "Approved" %}
+                    <span class="badge badge-approved">Approved</span>
+                {% elif application.system_status == "Rejected" %}
+                    <span class="badge badge-rejected">Rejected</span>
+                {% elif application.system_status == "Under Review" %}
+                    <span class="badge badge-review">Under Review</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                {% endif %}
+            </td>
+            <td>{{ application.human_decision }}</td>
+            <td>{{ application.created_at }}</td>
+            <td><a href="{% url 'application_result' application.id %}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p>No applications found.</p>
+{% endif %}
+
+{% endblock %}

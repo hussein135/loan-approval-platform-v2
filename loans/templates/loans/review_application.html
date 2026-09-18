@@ -1,0 +1,58 @@
+{% extends "loans/base.html" %}
+{% block title %}Review Application{% endblock %}
+{% block content %}
+
+<h1>Review Application #{{ application.id }}</h1>
+
+<div class="result-grid">
+    <div class="result-box">
+        <strong>Primary Model</strong>
+        <h2>{{ application.model_recommendation }}</h2>
+    </div>
+    <div class="result-box">
+        <strong>Secondary Model</strong>
+        <h2>{{ application.secondary_recommendation }}</h2>
+    </div>
+</div>
+
+<div class="result-box">
+    <p>
+        <strong>Approval Probability:</strong>
+        {% if application.approval_probability is not None %}
+            {{ application.approval_probability|floatformat:4 }}
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
+    <p>
+        <strong>Secondary Probability:</strong>
+        {% if application.secondary_probability is not None %}
+            {{ application.secondary_probability|floatformat:4 }}
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
+    <p>
+        <strong>Current System Status:</strong>
+        <span class="badge badge-review">{{ application.system_status }}</span>
+    </p>
+    <p>
+        <strong>Review Reason:</strong>
+        {{ application.review_reason|default:"Review required" }}
+    </p>
+</div>
+
+<h2>Human Decision</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="actions">
+        <button class="button" type="submit" name="human_decision" value="Approved">
+            Approve
+        </button>
+        <button class="button button-secondary" type="submit" name="human_decision" value="Rejected">
+            Reject
+        </button>
+    </div>
+</form>
+
+{% endblock %}

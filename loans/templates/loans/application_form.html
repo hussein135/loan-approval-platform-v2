@@ -1,0 +1,36 @@
+{% extends "loans/base.html" %}
+{% block title %}New Loan Application{% endblock %}
+{% block content %}
+<h1>New Loan Application</h1>
+<p>Complete the information below to evaluate the loan application.</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="errorlist">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="form-grid">
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="actions">
+        <button class="button" type="submit">Evaluate Application</button>
+        <a class="button button-secondary" href="{% url 'home' %}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "loans/base.html" %}
+{% block title %}Application Result{% endblock %}
+{% block content %}
+
+<h1>Application #{{ application.id }}</h1>
+
+<p>
+    {% if application.system_status == "Approved" %}
+        <span class="badge badge-approved">Approved</span>
+    {% elif application.system_status == "Rejected" %}
+        <span class="badge badge-rejected">Rejected</span>
+    {% elif application.system_status == "Under Review" %}
+        <span class="badge badge-review">Under Review</span>
+    {% else %}
+        <span class="badge badge-pending">Pending</span>
+    {% endif %}
+</p>
+
+<div class="result-grid">
+    <div class="result-box">
+        <strong>Model Recommendation</strong>
+        <h2>{{ application.model_recommendation }}</h2>
+    </div>
+
+    <div class="result-box">
+        <strong>Approval Probability</strong>
+        <h2>
+            {% if approval_percentage is not None %}
+                {{ approval_percentage }}%
+            {% else %}
+                N/A
+            {% endif %}
+        </h2>
+    </div>
+
+    <div class="result-box">
+        <strong>Risk Score</strong>
+        <h2>
+            {% if risk_percentage is not None %}
+                {{ risk_percentage }}%
+            {% else %}
+                N/A
+            {% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="notice">
+    Risk Score is an internal value derived from approval probability.
+    It is not a calibrated probability of default.
+</div>
+
+<h2>Secondary Model</h2>
+<div class="result-box">
+    <div class="metric">
+        <strong>Recommendation:</strong>
+        {{ application.secondary_recommendation }}
+    </div>
+    <div class="metric">
+        <strong>Probability:</strong>
+        {% if secondary_percentage is not None %}
+            {{ secondary_percentage }}%
+        {% else %}
+            N/A
+        {% endif %}
+    </div>
+</div>
+
+<h2>Review Information</h2>
+<div class="result-box">
+    <div class="metric">
+        <strong>Review Reason:</strong>
+        {{ application.review_reason|default:"No review reason" }}
+    </div>
+    <div class="metric">
+        <strong>Human Decision:</strong>
+        {{ application.human_decision }}
+    </div>
+</div>
+
+<h2>Top Factors Behind the Prediction</h2>
+<div class="explanation-box">
+    <p class="explanation-note">
+        These factors explain how the model used the application data.
+        They do not represent causal or legal reasons for the decision.
+    </p>
+
+    {% if explanation %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Value</th>
+                        <th>SHAP Value</th>
+                        <th>Direction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in explanation %}
+                    <tr>
+                        <td>{{ item.feature }}</td>
+                        <td>{{ item.value }}</td>
+                        <td>{{ item.shap_value }}</td>
+                        <td>
+                            {% if item.direction == "Toward Approved" %}
+                                <span class="approved-direction">Toward Approved</span>
+                            {% else %}
+                                <span class="rejected-direction">Toward Rejected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No explanation is currently available.</p>
+    {% endif %}
+</div>
+
+<div class="actions">
+    <a class="button" href="{% url 'create_application' %}">
+        New Application
+    </a>
+    {% if user.is_staff %}
+        <a class="button button-secondary" href="{% url 'dashboard' %}">
+            Dashboard
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}

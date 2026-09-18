@@ -1,0 +1,14 @@
+{% extends "loans/base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>Intelligent Loan Decision Support</h1>
+    <p>
+        A machine-learning platform for evaluating loan applications using
+        predictive modelling, risk analysis, explainable AI and human review.
+    </p>
+    <a class="button" href="{% url 'create_application' %}">
+        Start New Application
+    </a>
+</div>
+{% endblock %}

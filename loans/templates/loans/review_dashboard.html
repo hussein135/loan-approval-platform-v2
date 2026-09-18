@@ -1,0 +1,49 @@
+{% extends "loans/base.html" %}
+{% block title %}Review Dashboard{% endblock %}
+{% block content %}
+
+<h1>Applications Under Review</h1>
+<p>Applications listed here require a human decision.</p>
+
+{% if applications %}
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Primary Model</th>
+            <th>Approval Probability</th>
+            <th>Secondary Model</th>
+            <th>Review Reason</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for application in applications %}
+        <tr>
+            <td>#{{ application.id }}</td>
+            <td>{{ application.model_recommendation }}</td>
+            <td>
+                {% if application.approval_probability is not None %}
+                    {{ application.approval_probability|floatformat:4 }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>{{ application.secondary_recommendation }}</td>
+            <td>{{ application.review_reason|default:"Review required" }}</td>
+            <td>
+                <a class="button" href="{% url 'review_application' application.id %}">
+                    Review
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p>There are currently no applications waiting for review.</p>
+{% endif %}
+
+{% endblock %}
